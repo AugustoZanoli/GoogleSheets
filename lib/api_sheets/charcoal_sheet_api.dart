@@ -1,7 +1,7 @@
-import 'package:fsheets/models/user.dart';
+import 'package:fsheets/models/charcoal.dart';
 import 'package:gsheets/gsheets.dart';
 
-class UserSheetsApi{
+class CharcoalSheetApi{
   static const _credentials = r''' 
   {
   "type": "service_account",
@@ -16,20 +16,19 @@ class UserSheetsApi{
   "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/gsheet%40gsheets-408722.iam.gserviceaccount.com",
   "universe_domain": "googleapis.com"
 }
-
   ''';
 
   static final _spreadsheetId = '1kAlZlzWicDq3Ux2ZbKm4npm9S7vZ0gzXMd8r6rG188k';
   static final _gsheets = GSheets(_credentials);
-  static Worksheet? _userSheet;
+  static Worksheet? _charcoalSheet;
 
   static Future init() async {
     try{
       final spreadsheet = await _gsheets.spreadsheet(_spreadsheetId);
-      _userSheet = await _getWorkSheet(spreadsheet, title:'Users');
+      _charcoalSheet = await _getWorkSheet(spreadsheet, title:'Charcoals');
 
-      final firstRow = UserFields.getFields();
-      _userSheet!.values.insertRow(1, firstRow);
+      final firstRow = CharcoalFields.getFields();
+      _charcoalSheet!.values.insertRow(1, firstRow);
       } catch (e) {
         print('Init Error: $e');
       }
@@ -48,15 +47,16 @@ class UserSheetsApi{
   }
 
   static Future<int> getRowCount() async{
-    if(_userSheet == null) return 0;
+    if(_charcoalSheet == null) return 0;
 
-    final lastRow = await _userSheet!.values.lastRow();
+    final lastRow = await _charcoalSheet!.values.lastRow();
     return lastRow == null ? 0 : int.tryParse(lastRow.first) ?? 0;
   }
 
   static Future insert(List<Map<String, dynamic>> rowList) async{
-    if(_userSheet == null) return;
+    if(_charcoalSheet == null) return;
 
-    _userSheet!.values.map.appendRows(rowList);
+    _charcoalSheet!.values.map.appendRows(rowList);
   }
 }
+
